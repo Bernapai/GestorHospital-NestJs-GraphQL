@@ -14,8 +14,8 @@ Este proyecto es una API construida con **NestJS**, **GraphQL** y **PostgreSQL**
 - **Swagger** para documentación REST
 - **@nestjs/config** para variables de entorno
 - **Jest** para testing unitario
+- **Arquitectura** Arquitectura modular con separación en capas dentro de los módulos
 
----
 
 ## 📦 Instalación
 
