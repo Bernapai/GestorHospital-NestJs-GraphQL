@@ -5,6 +5,7 @@ import { PacientesModule } from './pacientes/pacientes.module';
 import { ConfigModule } from '@nestjs/config';
 import { CitasModule } from './citas/citas.module';
 import { MedicosModule } from './medicos/medicos.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { MedicosModule } from './medicos/medicos.module';
     PacientesModule,
     CitasModule,
     MedicosModule,
+    UsersModule,
   ],
   controllers: [],
   providers: [],

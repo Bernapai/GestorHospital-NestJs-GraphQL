@@ -1,7 +1,24 @@
-import { InputType, Int, Field } from '@nestjs/graphql';
+// dto/create-cita.dto.ts
+import { InputType, Field, ID } from '@nestjs/graphql';
+import { IsString, IsDateString } from 'class-validator';
 
 @InputType()
 export class CreateCitaInput {
-  @Field(() => Int, { description: 'Example field (placeholder)' })
-  exampleField: number;
+  @Field(() => ID)
+  medicoId: number;
+
+  @Field(() => ID)
+  pacienteId: number;
+
+  @Field()
+  @IsString()
+  razon: string;
+
+  @Field()
+  @IsDateString()
+  fecha: Date;
+
+  @Field()
+  @IsString() // podés usar un custom validator para formato HH:mm
+  hora: string;
 }

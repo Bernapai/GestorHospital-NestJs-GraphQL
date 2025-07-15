@@ -16,6 +16,7 @@ async function bootstrap() {
     .setDescription('Documentación de usuarios, médicos y citas')
     .setVersion('1.0')
     .addTag('usuarios')
+    .addTag('pacientes')
     .addTag('medicos')
     .addTag('citas')
     .build();
@@ -35,6 +36,5 @@ async function bootstrap() {
 
   const port = configService.get<number>('PORT') ?? 3000;
   await app.listen(port);
-
 }
 bootstrap();
