@@ -1,26 +1,55 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Usuario } from '../entities/user.entity';
 import { CreateUserInput } from '../dto/create-user.input';
 import { UpdateUserInput } from '../dto/update-user.input';
 
 @Injectable()
 export class UsersService {
-  create(createUserInput: CreateUserInput) {
-    return 'This action adds a new user';
+  constructor(
+    @InjectRepository(Usuario)
+    private usuarioRepository: Repository<Usuario>,
+  ) { }
+
+  async create(createUsuarioDto: CreateUserInput): Promise<Usuario> {
+    const usuario = this.usuarioRepository.create(createUsuarioDto);
+    return this.usuarioRepository.save(usuario);
   }
 
-  findAll() {
-    return `This action returns all users`;
+  async findAll(): Promise<Usuario[]> {
+    return this.usuarioRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async findOne(id: number): Promise<Usuario> {
+    const usuario = await this.usuarioRepository.findOneBy({ id });
+    if (!usuario) {
+      throw new NotFoundException(`Usuario con id ${id} no encontrado`);
+    }
+    return usuario;
   }
 
-  update(id: number, updateUserInput: UpdateUserInput) {
-    return `This action updates a #${id} user`;
+  async update(id: number, updateUsuarioDto: UpdateUserInput): Promise<Usuario> {
+    const usuario = await this.usuarioRepository.preload({
+      id,
+      ...updateUsuarioDto,
+    });
+
+    if (!usuario) {
+      throw new NotFoundException(`Usuario con id ${id} no encontrado`);
+    }
+
+    return this.usuarioRepository.save(usuario);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async remove(id: number): Promise<Usuario> {
+    const usuario = await this.usuarioRepository.findOneBy({ id });
+
+    if (!usuario) {
+      throw new NotFoundException(`Usuario con id ${id} no encontrado`);
+    }
+
+    await this.usuarioRepository.remove(usuario);
+    return usuario;
   }
 }
