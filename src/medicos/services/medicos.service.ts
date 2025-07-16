@@ -1,26 +1,49 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateMedicoInput } from '../dto/create-medico.input';
 import { UpdateMedicoInput } from '../dto/update-medico.input';
+import { Medico } from '../entities/medico.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class MedicosService {
-  create(createMedicoInput: CreateMedicoInput) {
-    return 'This action adds a new medico';
+  constructor(
+    @InjectRepository(Medico)
+    private readonly medicoRepository: Repository<Medico>
+  ) { }
+
+  async create(createMedicoInput: CreateMedicoInput): Promise<Medico> {
+    const medico = this.medicoRepository.create(createMedicoInput)
+    return await this.medicoRepository.save(medico)
   }
 
-  findAll() {
-    return `This action returns all medicos`;
+  async findAll(): Promise<Medico[]> {
+    return await this.medicoRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} medico`;
+  async findOne(id: number): Promise<Medico> {
+    const medico = await this.medicoRepository.findOne({ where: { id } });
+    if (!medico) {
+      throw new NotFoundException(`Medico con ID ${id} no encontrado`);
+    }
+    return medico;
   }
 
-  update(id: number, updateMedicoInput: UpdateMedicoInput) {
-    return `This action updates a #${id} medico`;
+  async update(id: number, updateMedicoInput: UpdateMedicoInput): Promise<Medico> {
+    const medico = await this.findOne(id); // Verifica que existe
+    Object.assign(medico, updateMedicoInput);
+    return await this.medicoRepository.save(medico);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} medico`;
+  async remove(id: number): Promise<Medico> {
+    const result = await this.medicoRepository.findOneBy({ id });
+
+    if (!result) {
+      throw new NotFoundException(`Medico con id ${id} no encontrado`);
+    }
+
+    await this.medicoRepository.remove(result)
+    return result;
+
   }
 }
