@@ -1,26 +1,50 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreatePacienteInput } from '../dto/create-paciente.input';
 import { UpdatePacienteInput } from '../dto/update-paciente.input';
+import { Paciente } from '../entities/paciente.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+
 
 @Injectable()
 export class PacientesService {
-  create(createPacienteInput: CreatePacienteInput) {
-    return 'This action adds a new paciente';
+  constructor(
+    @InjectRepository(Paciente)
+    private readonly pacienteRepository: Repository<Paciente>,
+  ) { }
+
+  async create(createPacienteInput: CreatePacienteInput): Promise<Paciente> {
+    const paciente = this.pacienteRepository.create(createPacienteInput);
+    return await this.pacienteRepository.save(paciente);
   }
 
-  findAll() {
-    return `This action returns all pacientes`;
+  async findAll(): Promise<Paciente[]> {
+    return await this.pacienteRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} paciente`;
+  async findOne(id: number): Promise<Paciente> {
+    const paciente = await this.pacienteRepository.findOne({ where: { id } });
+    if (!paciente) {
+      throw new NotFoundException(`Paciente con ID ${id} no encontrado`);
+    }
+    return paciente;
   }
 
-  update(id: number, updatePacienteInput: UpdatePacienteInput) {
-    return `This action updates a #${id} paciente`;
+  async update(id: number, updatePacienteInput: UpdatePacienteInput): Promise<Paciente> {
+    const paciente = await this.findOne(id); // Verifica que existe
+    Object.assign(paciente, updatePacienteInput);
+    return await this.pacienteRepository.save(paciente);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} paciente`;
+  async remove(id: number): Promise<Paciente> {
+    const result = await this.pacienteRepository.findOneBy({ id });
+
+    if (!result) {
+      throw new NotFoundException(`Paciente con id ${id} no encontrado`);
+    }
+
+    await this.pacienteRepository.remove(result)
+    return result;
+
   }
 }
