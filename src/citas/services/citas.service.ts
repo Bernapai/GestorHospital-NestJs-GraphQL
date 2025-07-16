@@ -1,26 +1,50 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateCitaInput } from '../dto/create-cita.input';
 import { UpdateCitaInput } from '../dto/update-cita.input';
+import { Cita } from '../entities/cita.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class CitasService {
-  create(createCitaInput: CreateCitaInput) {
-    return 'This action adds a new cita';
+  constructor(
+    @InjectRepository(Cita)
+    private readonly citaRepository: Repository<Cita>,
+  ) { }
+
+  async create(createCitaInput: CreateCitaInput): Promise<Cita> {
+    const cita = this.citaRepository.create(createCitaInput);
+    return await this.citaRepository.save(cita);
   }
 
-  findAll() {
-    return `This action returns all citas`;
+  async findAll(): Promise<Cita[]> {
+    return await this.citaRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} cita`;
+  async findOne(id: number): Promise<Cita> {
+    const cita = await this.citaRepository.findOne({ where: { id } });
+    if (!cita) {
+      throw new NotFoundException(`Cita con ID ${id} no encontrado`);
+    }
+    return cita;
   }
 
-  update(id: number, updateCitaInput: UpdateCitaInput) {
-    return `This action updates a #${id} cita`;
+  async update(id: number, updateCitaInput: UpdateCitaInput): Promise<Cita> {
+    const cita = await this.findOne(id); // Verifica que existe
+    Object.assign(cita, updateCitaInput);
+    return await this.citaRepository.save(cita);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} cita`;
+  async remove(id: number): Promise<Cita> {
+    const result = await this.citaRepository.findOneBy({ id });
+
+    if (!result) {
+      throw new NotFoundException(`Paciente con id ${id} no encontrado`);
+    }
+
+    await this.citaRepository.remove(result)
+    return result;
+
   }
+
 }
