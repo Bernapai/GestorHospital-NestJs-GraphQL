@@ -6,6 +6,8 @@ import { ConfigModule } from '@nestjs/config';
 import { CitasModule } from './citas/citas.module';
 import { MedicosModule } from './medicos/medicos.module';
 import { UsersModule } from './users/users.module';
+import { DatabaseModule } from './database/database.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -20,6 +22,8 @@ import { UsersModule } from './users/users.module';
     CitasModule,
     MedicosModule,
     UsersModule,
+    DatabaseModule,
+    AuthModule
   ],
   controllers: [],
   providers: [],
