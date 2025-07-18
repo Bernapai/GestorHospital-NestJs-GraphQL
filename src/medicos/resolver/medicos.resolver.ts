@@ -3,10 +3,19 @@ import { MedicosService } from '../services/medicos.service';
 import { Medico } from '../entities/medico.entity';
 import { CreateMedicoInput } from '../dto/create-medico.input';
 import { UpdateMedicoInput } from '../dto/update-medico.input';
+import { AuthGuard } from '@nestjs/passport';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { Roles } from 'src/auth/decorators/roles.decorator';
+import { UseGuards } from '@nestjs/common';
+import { RolUsuario } from 'src/users/entities/user.entity';
+
 
 @Resolver(() => Medico)
+@UseGuards(AuthGuard, RolesGuard)
+@Roles(RolUsuario.MEDICO)
 export class MedicosResolver {
   constructor(private readonly medicosService: MedicosService) { }
+
 
   @Query(() => [Medico], { name: 'pacientes' })
   findAll(): Promise<Medico[]> {
