@@ -3,10 +3,10 @@ import { ObjectType, Field, ID } from '@nestjs/graphql';
 import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn } from 'typeorm';
 import { Usuario } from 'src/users/entities/user.entity';
 
-@ObjectType()
+@ObjectType({ description: 'Representa un paciente asociado a un usuario' })
 @Entity()
 export class Paciente {
-  @Field(() => ID)
+  @Field(() => ID, { description: 'Identificador único del paciente' })
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -14,19 +14,19 @@ export class Paciente {
   @JoinColumn()
   usuario: Usuario;
 
-  @Field()
+  @Field({ description: 'Nombre completo del paciente' })
   @Column()
   nombre: string;
 
-  @Field()
+  @Field({ description: 'Documento Nacional de Identidad del paciente' })
   @Column()
   dni: string;
 
-  @Field({ nullable: true })
+  @Field({ nullable: true, description: 'Fecha de nacimiento del paciente' })
   @Column({ nullable: true })
   fechaNacimiento?: Date;
 
-  @Field({ nullable: true })
+  @Field({ nullable: true, description: 'Número de teléfono del paciente' })
   @Column({ nullable: true })
   telefono?: string;
 }

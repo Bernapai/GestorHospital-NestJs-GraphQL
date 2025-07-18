@@ -19,6 +19,7 @@ async function bootstrap() {
     .addTag('pacientes')
     .addTag('medicos')
     .addTag('citas')
+    .addTag('Middlewares')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);

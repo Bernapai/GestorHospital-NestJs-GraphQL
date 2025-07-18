@@ -1,25 +1,25 @@
-// dto/create-paciente.dto.ts
+// create-paciente.input.ts
 import { InputType, Field, ID } from '@nestjs/graphql';
 import { IsString, IsOptional } from 'class-validator';
 
-@InputType()
+@InputType({ description: 'Datos para crear un nuevo paciente' })
 export class CreatePacienteInput {
-  @Field(() => ID)
+  @Field(() => ID, { description: 'ID del usuario asociado al paciente' })
   usuarioId: number;
 
-  @Field()
+  @Field({ description: 'Nombre completo del paciente' })
   @IsString()
   nombre: string;
 
-  @Field()
+  @Field({ description: 'Documento Nacional de Identidad del paciente' })
   @IsString()
   dni: string;
 
-  @Field({ nullable: true })
+  @Field({ nullable: true, description: 'Fecha de nacimiento del paciente' })
   @IsOptional()
   fechaNacimiento?: Date;
 
-  @Field({ nullable: true })
+  @Field({ nullable: true, description: 'Número de teléfono del paciente' })
   @IsOptional()
   @IsString()
   telefono?: string;

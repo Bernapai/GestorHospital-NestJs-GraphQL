@@ -14,37 +14,49 @@ export class UsersResolver {
 
   @UseGuards(AuthGuard, RolesGuard)
   @Roles(RolUsuario.MEDICO)
-  @Query(() => [Usuario], { name: 'usuarios' })
+  @Query(() => [Usuario], {
+    name: 'usuarios',
+    description: 'Obtiene la lista completa de usuarios (solo para médicos)',
+  })
   findAll() {
     return this.usersService.findAll();
   }
 
   @UseGuards(AuthGuard, RolesGuard)
   @Roles(RolUsuario.MEDICO)
-  @Query(() => Usuario, { name: 'usuario' })
-  findOne(@Args('id', { type: () => Int }) id: number) {
+  @Query(() => Usuario, {
+    name: 'usuario',
+    description: 'Obtiene un usuario por su ID (solo para médicos)',
+  })
+  findOne(@Args('id', { type: () => Int, description: 'ID del usuario a buscar' }) id: number) {
     return this.usersService.findOne(id);
   }
 
-
-  @Mutation(() => Usuario)
-  createUsuario(@Args('createUsuarioInput') createUsuarioInput: CreateUserInput) {
+  @Mutation(() => Usuario, {
+    description: 'Crea un nuevo usuario en el sistema',
+  })
+  createUsuario(
+    @Args('createUsuarioInput', { description: 'Datos para crear un usuario' }) createUsuarioInput: CreateUserInput,
+  ) {
     return this.usersService.create(createUsuarioInput);
   }
 
-
-  @Mutation(() => Usuario)
+  @Mutation(() => Usuario, {
+    description: 'Actualiza los datos de un usuario existente',
+  })
   updateUsuario(
-    @Args('id', { type: () => Int }) id: number,
-    @Args('updateUsuarioInput') updateUsuarioInput: UpdateUserInput,
+    @Args('id', { type: () => Int, description: 'ID del usuario a actualizar' }) id: number,
+    @Args('updateUsuarioInput', { description: 'Datos para actualizar el usuario' }) updateUsuarioInput: UpdateUserInput,
   ) {
     return this.usersService.update(id, updateUsuarioInput);
   }
 
   @UseGuards(AuthGuard, RolesGuard)
   @Roles(RolUsuario.MEDICO)
-  @Mutation(() => Usuario)
-  removeUsuario(@Args('id', { type: () => Int }) id: number) {
+  @Mutation(() => Usuario, {
+    description: 'Elimina un usuario del sistema por su ID (solo para médicos)',
+  })
+  removeUsuario(@Args('id', { type: () => Int, description: 'ID del usuario a eliminar' }) id: number) {
     return this.usersService.remove(id);
   }
 }

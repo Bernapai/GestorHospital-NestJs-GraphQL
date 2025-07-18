@@ -16,36 +16,49 @@ import { RolUsuario } from 'src/users/entities/user.entity';
 export class MedicosResolver {
   constructor(private readonly medicosService: MedicosService) { }
 
-
-  @Query(() => [Medico], { name: 'pacientes' })
+  @Query(() => [Medico], {
+    name: 'medicos',
+    description: 'Obtiene la lista completa de médicos (solo para médicos autenticados)',
+  })
   findAll(): Promise<Medico[]> {
     return this.medicosService.findAll();
   }
 
-  @Query(() => Medico, { name: 'paciente' })
-  findOne(@Args('id', { type: () => Int }) id: number): Promise<Medico> {
+  @Query(() => Medico, {
+    name: 'medico',
+    description: 'Obtiene un médico por su ID (solo para médicos autenticados)',
+  })
+  findOne(
+    @Args('id', { type: () => Int, description: 'ID del médico a buscar' }) id: number,
+  ): Promise<Medico> {
     return this.medicosService.findOne(id);
   }
 
-  @Mutation(() => Medico)
-  createPaciente(
-    @Args('createPacienteInput') createMedicoInput: CreateMedicoInput,
+  @Mutation(() => Medico, {
+    description: 'Crea un nuevo médico en el sistema (solo para médicos autenticados)',
+  })
+  createMedico(
+    @Args('createMedicoInput', { description: 'Datos para crear un médico' }) createMedicoInput: CreateMedicoInput,
   ): Promise<Medico> {
     return this.medicosService.create(createMedicoInput);
   }
 
-  @Mutation(() => Medico)
-  updatePaciente(
-    @Args('id', { type: () => Int }) id: number,
-    @Args('updatePacienteInput') updateMedicoInput: UpdateMedicoInput,
+  @Mutation(() => Medico, {
+    description: 'Actualiza un médico existente (solo para médicos autenticados)',
+  })
+  updateMedico(
+    @Args('id', { type: () => Int, description: 'ID del médico a actualizar' }) id: number,
+    @Args('updateMedicoInput', { description: 'Datos para actualizar el médico' }) updateMedicoInput: UpdateMedicoInput,
   ): Promise<Medico> {
     return this.medicosService.update(id, updateMedicoInput);
   }
 
-  @Mutation(() => Medico)
-  removeUsuario(@Args('id', { type: () => Int }) id: number) {
+  @Mutation(() => Medico, {
+    description: 'Elimina un médico por su ID (solo para médicos autenticados)',
+  })
+  removeMedico(
+    @Args('id', { type: () => Int, description: 'ID del médico a eliminar' }) id: number,
+  ) {
     return this.medicosService.remove(id);
   }
-
-
 }

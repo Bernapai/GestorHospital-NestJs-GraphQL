@@ -3,10 +3,10 @@ import { ObjectType, Field, ID } from '@nestjs/graphql';
 import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn } from 'typeorm';
 import { Usuario } from 'src/users/entities/user.entity';
 
-@ObjectType()
+@ObjectType({ description: 'Representa un médico asociado a un usuario' })
 @Entity()
 export class Medico {
-  @Field(() => ID)
+  @Field(() => ID, { description: 'Identificador único del médico' })
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -14,19 +14,19 @@ export class Medico {
   @JoinColumn()
   usuario: Usuario;
 
-  @Field()
+  @Field({ description: 'Especialidad médica del profesional' })
   @Column()
   especialidad: string;
 
-  @Field()
+  @Field({ description: 'Nombre completo del médico' })
   @Column()
   nombre: string;
 
-  @Field()
+  @Field({ description: 'Dirección física del consultorio o lugar de trabajo' })
   @Column()
   direccion: string;
 
-  @Field({ nullable: true })
+  @Field({ nullable: true, description: 'Número de teléfono de contacto' })
   @Column({ nullable: true })
   telefono?: string;
 }

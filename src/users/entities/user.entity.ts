@@ -1,7 +1,6 @@
-// usuario.entity.ts
+
 import { ObjectType, Field, ID, registerEnumType } from '@nestjs/graphql';
 import { Entity, PrimaryGeneratedColumn, Column, OneToOne } from 'typeorm';
-import { IsEmail, IsEnum, IsString, MinLength } from 'class-validator';
 import { Medico } from 'src/medicos/entities/medico.entity';
 import { Paciente } from 'src/pacientes/entities/paciente.entity';
 
@@ -12,23 +11,23 @@ export enum RolUsuario {
 
 registerEnumType(RolUsuario, {
   name: 'RolUsuario',
+  description: 'Rol del usuario dentro del sistema',
 });
 
-@ObjectType()
+@ObjectType({ description: 'Representa un usuario del sistema' })
 @Entity()
 export class Usuario {
-  @Field(() => ID)
+  @Field(() => ID, { description: 'Identificador único del usuario' })
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Field()
+  @Field({ description: 'Correo electrónico único del usuario' })
   @Column({ unique: true })
   email: string;
 
-  @Column()
-  password: string;
+  // No mostramos password en GraphQL para seguridad (sin @Field)
 
-  @Field(() => RolUsuario)
+  @Field(() => RolUsuario, { description: 'Rol asignado al usuario (médico o paciente)' })
   @Column({ type: 'enum', enum: RolUsuario })
   rol: RolUsuario;
 
