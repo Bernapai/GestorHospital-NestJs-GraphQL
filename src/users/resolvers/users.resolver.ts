@@ -1,18 +1,21 @@
 import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
+import { Injectable } from '@nestjs/common';
 import { UsersService } from '../services/users.service';
 import { RolUsuario, Usuario } from '../entities/user.entity';
 import { CreateUserInput } from '../dto/create-user.input';
 import { UpdateUserInput } from '../dto/update-user.input';
-import { AuthGuard } from '@nestjs/passport';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { Roles } from 'src/auth/decorators/roles.decorator';
 import { UseGuards } from '@nestjs/common';
 
+
+@Injectable()
 @Resolver(() => Usuario)
 export class UsersResolver {
   constructor(private readonly usersService: UsersService) { }
 
-  @UseGuards(AuthGuard, RolesGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(RolUsuario.MEDICO)
   @Query(() => [Usuario], {
     name: 'usuarios',
@@ -22,7 +25,7 @@ export class UsersResolver {
     return this.usersService.findAll();
   }
 
-  @UseGuards(AuthGuard, RolesGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(RolUsuario.MEDICO)
   @Query(() => Usuario, {
     name: 'usuario',
@@ -51,7 +54,7 @@ export class UsersResolver {
     return this.usersService.update(id, updateUsuarioInput);
   }
 
-  @UseGuards(AuthGuard, RolesGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(RolUsuario.MEDICO)
   @Mutation(() => Usuario, {
     description: 'Elimina un usuario del sistema por su ID (solo para médicos)',

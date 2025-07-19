@@ -3,17 +3,20 @@ import { CitasService } from '../services/citas.service';
 import { Cita } from '../entities/cita.entity';
 import { CreateCitaInput } from '../dto/create-cita.input';
 import { UpdateCitaInput } from '../dto/update-cita.input';
-import { AuthGuard } from '@nestjs/passport';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { Roles } from 'src/auth/decorators/roles.decorator';
 import { UseGuards } from '@nestjs/common';
 import { RolUsuario } from 'src/users/entities/user.entity';
+import { Injectable } from '@nestjs/common';
 
+
+@Injectable()
 @Resolver(() => Cita)
 export class CitasResolver {
   constructor(private readonly citasService: CitasService) { }
 
-  @UseGuards(AuthGuard, RolesGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(RolUsuario.MEDICO)
   @Query(() => [Cita], {
     name: 'citas',
@@ -23,7 +26,7 @@ export class CitasResolver {
     return this.citasService.findAll();
   }
 
-  @UseGuards(AuthGuard, RolesGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(RolUsuario.MEDICO)
   @Query(() => Cita, {
     name: 'cita',
@@ -33,7 +36,7 @@ export class CitasResolver {
     return this.citasService.findOne(id);
   }
 
-  @UseGuards(AuthGuard, RolesGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(RolUsuario.MEDICO, RolUsuario.PACIENTE)
   @Mutation(() => Cita, {
     description: 'Crea una nueva cita. Pueden hacerlo tanto médicos como pacientes.',
@@ -44,7 +47,7 @@ export class CitasResolver {
     return this.citasService.create(createCitaInput);
   }
 
-  @UseGuards(AuthGuard, RolesGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(RolUsuario.MEDICO)
   @Mutation(() => Cita, {
     description: 'Actualiza una cita existente. Solo accesible por médicos.',
@@ -56,7 +59,7 @@ export class CitasResolver {
     return this.citasService.update(id, updateCitaInput);
   }
 
-  @UseGuards(AuthGuard, RolesGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(RolUsuario.MEDICO)
   @Mutation(() => Cita, {
     description: 'Elimina una cita por su ID. Solo accesible por médicos.',

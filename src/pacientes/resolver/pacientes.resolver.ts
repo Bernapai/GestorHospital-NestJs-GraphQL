@@ -3,17 +3,20 @@ import { PacientesService } from '../services/pacientes.service';
 import { Paciente } from '../entities/paciente.entity';
 import { CreatePacienteInput } from '../dto/create-paciente.input';
 import { UpdatePacienteInput } from '../dto/update-paciente.input';
-import { AuthGuard } from '@nestjs/passport';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { Roles } from 'src/auth/decorators/roles.decorator';
 import { UseGuards } from '@nestjs/common';
 import { RolUsuario } from 'src/users/entities/user.entity';
+import { Injectable } from '@nestjs/common';
 
+
+@Injectable()
 @Resolver(() => Paciente)
 export class PacientesResolver {
   constructor(private readonly pacientesService: PacientesService) { }
 
-  @UseGuards(AuthGuard, RolesGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(RolUsuario.MEDICO)
   @Query(() => [Paciente], {
     name: 'pacientes',
@@ -23,7 +26,7 @@ export class PacientesResolver {
     return this.pacientesService.findAll();
   }
 
-  @UseGuards(AuthGuard, RolesGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(RolUsuario.MEDICO)
   @Query(() => Paciente, {
     name: 'paciente',
@@ -33,7 +36,7 @@ export class PacientesResolver {
     return this.pacientesService.findOne(id);
   }
 
-  @UseGuards(AuthGuard, RolesGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(RolUsuario.PACIENTE)
   @Mutation(() => Paciente, {
     description: 'Permite que un paciente cree su perfil. Solo accesible por pacientes.'
@@ -44,7 +47,7 @@ export class PacientesResolver {
     return this.pacientesService.create(createPacienteInput);
   }
 
-  @UseGuards(AuthGuard, RolesGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(RolUsuario.MEDICO, RolUsuario.PACIENTE)
   @Mutation(() => Paciente, {
     description: 'Actualiza los datos de un paciente. Médicos y pacientes pueden acceder.'
@@ -56,7 +59,7 @@ export class PacientesResolver {
     return this.pacientesService.update(id, updatePacienteInput);
   }
 
-  @UseGuards(AuthGuard, RolesGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(RolUsuario.MEDICO)
   @Mutation(() => Paciente, {
     description: 'Elimina un paciente por ID. Solo accesible por médicos.'

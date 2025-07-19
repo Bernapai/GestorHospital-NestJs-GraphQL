@@ -5,7 +5,9 @@ import { loginInput } from '../dtos/login.input';
 import { registerInput } from '../dtos/register.input';
 import { AuthResponse } from '../dtos/authResponse.input';
 import { Usuario } from 'src/users/entities/user.entity';
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 @Resolver()
 export class AuthResolver {
     constructor(private readonly authService: AuthService) { }

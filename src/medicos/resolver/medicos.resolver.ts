@@ -3,15 +3,17 @@ import { MedicosService } from '../services/medicos.service';
 import { Medico } from '../entities/medico.entity';
 import { CreateMedicoInput } from '../dto/create-medico.input';
 import { UpdateMedicoInput } from '../dto/update-medico.input';
-import { AuthGuard } from '@nestjs/passport';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { Roles } from 'src/auth/decorators/roles.decorator';
 import { UseGuards } from '@nestjs/common';
 import { RolUsuario } from 'src/users/entities/user.entity';
+import { Injectable } from '@nestjs/common';
 
 
+@Injectable()
 @Resolver(() => Medico)
-@UseGuards(AuthGuard, RolesGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
 @Roles(RolUsuario.MEDICO)
 export class MedicosResolver {
   constructor(private readonly medicosService: MedicosService) { }

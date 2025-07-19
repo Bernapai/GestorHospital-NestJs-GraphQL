@@ -25,7 +25,9 @@ export class Usuario {
   @Column({ unique: true })
   email: string;
 
-  // No mostramos password en GraphQL para seguridad (sin @Field)
+  @Field({ description: 'Contraseña del usuario' })
+  @Column()
+  password: string;
 
   @Field(() => RolUsuario, { description: 'Rol asignado al usuario (médico o paciente)' })
   @Column({ type: 'enum', enum: RolUsuario })
