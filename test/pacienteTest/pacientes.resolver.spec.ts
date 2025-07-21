@@ -24,7 +24,7 @@ describe('PacientesResolver', () => {
 
   const mockPaciente: Paciente = {
     id: 1,
-    usuario: mockUsuario, // Assuming mockUsuario is defined elsewhere
+    usuario: mockUsuario,
     nombre: 'Juan Perez',
     dni: '12345678',
     fechaNacimiento: new Date('1990-01-01'),
@@ -34,9 +34,9 @@ describe('PacientesResolver', () => {
   const mockPacientesService = {
     findAll: jest.fn(),
     findOne: jest.fn(),
-    createPaciente: jest.fn(),
-    updatePaciente: jest.fn(),
-    removeUsuario: jest.fn(),
+    create: jest.fn(),
+    update: jest.fn(),
+    remove: jest.fn(),
   };
 
 
@@ -109,7 +109,7 @@ describe('PacientesResolver', () => {
         fechaNacimiento: new Date('1995-05-05'),
         telefono: '987654321',
       };
-      mockPacientesService.createPaciente.mockResolvedValue(mockPaciente);
+      mockPacientesService.create.mockResolvedValue(mockPaciente);
 
       const result = await resolver.createPaciente(createInput);
 
@@ -125,7 +125,7 @@ describe('PacientesResolver', () => {
         fechaNacimiento: new Date('1995-05-05'),
         telefono: '987654321',
       };
-      mockPacientesService.createPaciente.mockRejectedValue(new Error('Creation error'));
+      mockPacientesService.create.mockRejectedValue(new Error('Creation error'));
 
       await expect(resolver.createPaciente(createInput)).rejects.toThrow('Creation error');
     });
@@ -139,12 +139,12 @@ describe('PacientesResolver', () => {
         fechaNacimiento: new Date('1990-01-01'),
         telefono: '123456789',
       };
-      mockPacientesService.updatePaciente.mockResolvedValue(mockPaciente);
+      mockPacientesService.update.mockResolvedValue(mockPaciente);
 
       const result = await resolver.updatePaciente(1, updateInput);
 
       expect(result).toEqual(mockPaciente);
-      expect(service.update).toHaveBeenCalledWith(updateInput);
+      expect(service.update).toHaveBeenCalledWith(1, updateInput);
     });
 
     it('should handle update error', async () => {
@@ -154,7 +154,7 @@ describe('PacientesResolver', () => {
         fechaNacimiento: new Date('2000-01-01'),
         telefono: '000000000',
       };
-      mockPacientesService.updatePaciente.mockRejectedValue(new NotFoundException('Paciente not found'));
+      mockPacientesService.update.mockRejectedValue(new NotFoundException('Paciente not found'));
 
       await expect(resolver.updatePaciente(1, updateInput)).rejects.toThrow(NotFoundException);
     });
@@ -162,7 +162,7 @@ describe('PacientesResolver', () => {
 
   describe('removeUsuario', () => {
     it('should remove a paciente by id', async () => {
-      mockPacientesService.removeUsuario.mockResolvedValue(mockPaciente);
+      mockPacientesService.remove.mockResolvedValue(mockPaciente);
 
       const result = await resolver.removeUsuario(1);
 
@@ -171,7 +171,7 @@ describe('PacientesResolver', () => {
     });
 
     it('should handle removal error', async () => {
-      mockPacientesService.removeUsuario.mockRejectedValue(new NotFoundException('Paciente not found'));
+      mockPacientesService.remove.mockRejectedValue(new NotFoundException('Paciente not found'));
 
       await expect(resolver.removeUsuario(999)).rejects.toThrow(NotFoundException);
     });
