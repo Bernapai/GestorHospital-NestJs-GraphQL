@@ -4,6 +4,9 @@ import { CitasService } from 'src/citas/services/citas.service';
 import { CreateCitaInput } from 'src/citas/dto/create-cita.input';
 import { UpdateCitaInput } from 'src/citas/dto/update-cita.input';
 import { Cita } from 'src/citas/entities/cita.entity';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { NotFoundException } from '@nestjs/common';
 
 describe('CitasResolver', () => {
   let resolver: CitasResolver;
@@ -35,27 +38,49 @@ describe('CitasResolver', () => {
           useValue: mockService,
         },
       ],
-    }).compile();
+    })
+      .overrideGuard(JwtAuthGuard)
+      .useValue({ canActivate: jest.fn(() => true) })
+      .overrideGuard(RolesGuard)
+      .useValue({ canActivate: jest.fn(() => true) })
+      .compile();
 
     resolver = module.get<CitasResolver>(CitasResolver);
     service = module.get<CitasService>(CitasService);
   });
+
+  afterEach(() => jest.clearAllMocks());
 
   it('should be defined', () => {
     expect(resolver).toBeDefined();
   });
 
   it('should return all citas', async () => {
-    const result = [{ id: 1 }] as Cita[];
-    mockService.findAll.mockResolvedValue(result);
-    expect(await resolver.findAll()).toBe(result);
+    mockService.findAll.mockResolvedValue([mockCita]);
+
+    const result = await resolver.findAll();
+
+    expect(result).toEqual([mockCita]);
+    expect(service.findAll).toHaveBeenCalled();
   });
 
-  it('should return one cita', async () => {
-    const cita = { id: 1 } as Cita;
-    mockService.findOne.mockResolvedValue(cita);
-    expect(await resolver.findOne(1)).toBe(cita);
+  describe('findOne', () => {
+    it('debería retornar una cita por id', async () => {
+      mockService.findOne.mockResolvedValue(mockCita);
+
+      const result = await resolver.findOne(1);
+
+      expect(result).toEqual(mockCita);
+      expect(service.findOne).toHaveBeenCalledWith(1);
+    });
+
+    it('debería lanzar NotFoundException si no existe', async () => {
+      mockService.findOne.mockRejectedValue(new NotFoundException());
+
+      await expect(resolver.findOne(999)).rejects.toThrow(NotFoundException);
+    });
   });
+
 
   it('should create a cita', async () => {
     const input: CreateCitaInput = {
@@ -66,19 +91,45 @@ describe('CitasResolver', () => {
       hora: '15:00',
     };
     mockService.create.mockResolvedValue(mockCita);
-    expect(await resolver.createCita(input)).toBe(mockCita);
+    const result = await resolver.createCita(input);
+
+    expect(result).toEqual(mockCita);
+    expect(service.create).toHaveBeenCalledWith(input);
   });
 
-  it('should update a cita', async () => {
-    const input: UpdateCitaInput = { razon: 'Actualizado' };
-    const result = { id: 1, ...input } as Cita;
-    mockService.update.mockResolvedValue(result);
-    expect(await resolver.updateCita(1, input)).toBe(result);
+
+
+  describe('updateCita', () => {
+    it('debería actualizar una cita', async () => {
+      const input: UpdateCitaInput = {
+        razon: 'Consulta de seguimiento',
+      };
+
+      const updated = { ...mockCita, ...input };
+
+      mockService.update.mockResolvedValue(updated);
+
+      const result = await resolver.updateCita(1, input);
+
+      expect(result).toEqual(updated);
+      expect(service.update).toHaveBeenCalledWith(1, input);
+    });
   });
 
-  it('should remove a cita', async () => {
-    const result = { id: 1 } as Cita;
-    mockService.remove.mockResolvedValue(result);
-    expect(await resolver.removeCita(1)).toBe(result);
+  describe('removeCita', () => {
+    it('debería eliminar una cita', async () => {
+      mockService.remove.mockResolvedValue(mockCita);
+
+      const result = await resolver.removeCita(1);
+
+      expect(result).toEqual(mockCita);
+      expect(service.remove).toHaveBeenCalledWith(1);
+    });
+
+    it('debería lanzar NotFoundException si no existe', async () => {
+      mockService.remove.mockRejectedValue(new NotFoundException());
+
+      await expect(resolver.removeCita(999)).rejects.toThrow(NotFoundException);
+    });
   });
 });
