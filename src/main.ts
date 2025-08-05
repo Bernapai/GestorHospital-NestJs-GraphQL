@@ -4,11 +4,17 @@ import { ConfigService } from '@nestjs/config';
 import { DocumentBuilder } from '@nestjs/swagger';
 import { SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
+import { loggerConfig } from './config/logger.config';
 
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
+
+  const fs = require('fs');
+  if (!fs.existsSync('logs')) {
+    fs.mkdirSync('logs');
+  }
 
   //Swagger Configuration
   const config = new DocumentBuilder()
