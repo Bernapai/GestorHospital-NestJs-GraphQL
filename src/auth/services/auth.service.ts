@@ -27,7 +27,9 @@ export class AuthService {
         const payload = { sub: usuario.id, name: usuario.email, role: usuario.rol };
         const access_token = this.jwtService.sign(payload);
 
-        return { access_token, usuario };
+
+        const { password: _, ...usuarioSinPassword } = usuario;
+        return { access_token, usuario: usuarioSinPassword as Usuario };
     }
 
     async register(registerInput: registerInput): Promise<Usuario> {

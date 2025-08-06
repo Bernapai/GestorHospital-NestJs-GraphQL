@@ -1,33 +1,34 @@
-// cita.entity.ts
 import { ObjectType, Field, ID } from '@nestjs/graphql';
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
-import { Medico } from 'src/medicos/entities/medico.entity';
-import { Paciente } from 'src/pacientes/entities/paciente.entity';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { Medico } from '../../medicos/entities/medico.entity';
+import { Paciente } from '../../pacientes/entities/paciente.entity';
 
-@ObjectType({ description: 'Representa una cita médica entre un paciente y un médico' })
+@ObjectType({ description: 'Representa una cita médica' })
 @Entity()
 export class Cita {
-  @Field(() => ID, { description: 'Identificador único de la cita' })
+  @Field(() => ID)
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => Medico)
-  @Field(() => Medico, { description: 'Médico asignado a la cita' })
+  @Field(() => Medico)
+  @ManyToOne(() => Medico, (medico) => medico.citas)
+  @JoinColumn()
   medico: Medico;
 
-  @ManyToOne(() => Paciente)
-  @Field(() => Paciente, { description: 'Paciente que solicita la cita' })
+  @Field(() => Paciente)
+  @ManyToOne(() => Paciente, (paciente) => paciente.citas)
+  @JoinColumn()
   paciente: Paciente;
 
-  @Field({ description: 'Motivo o razón de la cita' })
+  @Field()
   @Column()
   razon: string;
 
-  @Field({ description: 'Fecha en que se realizará la cita' })
+  @Field()
   @Column({ type: 'date' })
   fecha: Date;
 
-  @Field({ description: 'Hora a la que está programada la cita (formato HH:mm)' })
+  @Field()
   @Column({ type: 'time' })
   hora: string;
 }

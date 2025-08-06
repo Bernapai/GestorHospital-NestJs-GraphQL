@@ -1,32 +1,38 @@
-// medico.entity.ts
 import { ObjectType, Field, ID } from '@nestjs/graphql';
-import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn, OneToMany } from 'typeorm';
 import { Usuario } from 'src/users/entities/user.entity';
+import { Cita } from '../../citas/entities/cita.entity';
 
 @ObjectType({ description: 'Representa un médico asociado a un usuario' })
 @Entity()
 export class Medico {
-  @Field(() => ID, { description: 'Identificador único del médico' })
+  @Field(() => ID)
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Field(() => Usuario)
   @OneToOne(() => Usuario, (usuario) => usuario.medico)
   @JoinColumn()
   usuario: Usuario;
 
-  @Field({ description: 'Especialidad médica del profesional' })
+  @Field()
   @Column()
   especialidad: string;
 
-  @Field({ description: 'Nombre completo del médico' })
+  // AÑADIR @Field A CITAS!
+  @Field(() => [Cita], { nullable: true })
+  @OneToMany(() => Cita, (cita) => cita.medico)
+  citas: Cita[];
+
+  @Field()
   @Column()
   nombre: string;
 
-  @Field({ description: 'Dirección física del consultorio o lugar de trabajo' })
+  @Field()
   @Column()
   direccion: string;
 
-  @Field({ nullable: true, description: 'Número de teléfono de contacto' })
+  @Field({ nullable: true })
   @Column({ nullable: true })
   telefono?: string;
 }

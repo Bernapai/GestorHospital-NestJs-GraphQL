@@ -10,7 +10,7 @@ import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
 @ApiTags('Health')
 @Controller('health')
-export class HealthController {
+export class HealthResolver {
   constructor(
     private health: HealthCheckService,
     private db: TypeOrmHealthIndicator,

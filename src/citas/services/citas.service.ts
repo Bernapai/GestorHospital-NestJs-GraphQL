@@ -6,6 +6,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
+import { Medico } from 'src/medicos/entities/medico.entity';
 
 @Injectable()
 export class CitasService {
@@ -145,7 +146,7 @@ export class CitasService {
 
     this.logger.log(`Fetching citas by medico ${medicoId} from database`);
     const citas = await this.citaRepository.find({
-      where: { medicoId }, // Ajustar según tu entidad
+      where: { medico: { id: medicoId } },
       relations: ['medico', 'paciente']
     });
 
@@ -165,7 +166,7 @@ export class CitasService {
 
     this.logger.log(`Fetching citas by paciente ${pacienteId} from database`);
     const citas = await this.citaRepository.find({
-      where: { pacienteId }, // Ajustar según tu entidad
+      where: { paciente: { id: pacienteId } }, // Ajustar según tu entidad
       relations: ['medico', 'paciente']
     });
 
